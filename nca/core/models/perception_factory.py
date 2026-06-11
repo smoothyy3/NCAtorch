@@ -4,6 +4,7 @@ from nca.core.models.ca.perceptions import (
     ConvPerception,
     SobelPerception,
     DeformableConvPerception,
+    DepthwiseSeparableConvPerception,
     ResidualConvPerception,
     MultiPerception,
     MultiHeadAttentionPerception,
@@ -24,6 +25,7 @@ from nca.core.models.ca.perceptions import (
 #   "mh_attention"   — multi-head attention with optional layer-norm and FFN
 #   "sobel"          — fixed Sobel edge-detection filters (no learned parameters)
 #   "deformable_conv"— deformable convolution with learned offsets
+#   "depthwise_separable_conv" — depthwise spatial + pointwise 1x1 (fewer params)
 #   "residual_conv"  — residual convolutional block
 PERCEPTION_REGISTRY = {
     "conv": lambda in_ch, cfg, dev: ConvPerception(
@@ -41,6 +43,9 @@ PERCEPTION_REGISTRY = {
     "sobel": lambda in_ch, cfg, dev: SobelPerception(in_ch, dev),
     "deformable_conv": lambda in_ch, cfg, dev: DeformableConvPerception(
         in_ch, cfg.OUT_CHANNEL, cfg.KERNEL_SIZE, device=dev
+    ),
+    "depthwise_separable_conv": lambda in_ch, cfg, dev: DepthwiseSeparableConvPerception(
+        in_ch, cfg.OUT_CHANNEL, cfg.KERNEL_SIZE, dilation=cfg.DILATION, device=dev
     ),
     "residual_conv": lambda in_ch, cfg, dev: ResidualConvPerception(
         in_ch, cfg.OUT_CHANNEL, cfg.KERNEL_SIZE, device=dev

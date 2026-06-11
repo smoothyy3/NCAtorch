@@ -100,6 +100,50 @@ class ConvPerception(Perception):
     def get_out_channel(self):
         return self.out_channel
 
+class DepthwiseSeparableConvPerception(Perception):
+    """Depthwise-separable convolution perception.
+
+    Factorises a standard convolution into a depthwise spatial filter (one
+    ``kernel_size`` kernel per input channel, no cross-channel mixing) followed
+    by a pointwise 1x1 convolution that mixes channels. This keeps the same
+    receptive field and output shape as ``ConvPerception`` while using far fewer
+    parameters (``in*k*k + in*out`` vs. ``in*out*k*k``), which makes it a useful
+    efficiency baseline for ablations.
+
+    The depthwise stage uses ``groups=in_channel`` so it cannot change the
+    channel count on its own; the pointwise stage is what lets ``out_channel``
+    be arbitrary.
+    """
+
+    def __init__(
+        self, in_channel=16, out_channel=80, kernel_size=3, slope=0.2, dilation=1, device="cpu") -> None:
+        super().__init__()
+
+        self.in_channel = in_channel
+        self.out_channel = out_channel
+        self.kernel_size = kernel_size
+        self.dilation = dilation
+        self.device = device
+
+        # Depthwise: one spatial kernel per channel (groups=in_channel).
+        self.depthwise = nn.Conv2d(
+            in_channel, in_channel, kernel_size=kernel_size, padding="same",
+            stride=1, dilation=dilation, groups=in_channel, padding_mode="circular",
+        )
+        # Pointwise: 1x1 conv mixes channels and sets the output channel count.
+        self.pointwise = nn.Conv2d(in_channel, out_channel, kernel_size=1)
+        self.lrelu = nn.LeakyReLU(slope)
+
+    def forward(self, x):
+        c = self.depthwise(x)
+        c = self.pointwise(c)
+        c = self.lrelu(c)
+        return c
+
+    def get_out_channel(self):
+        return self.out_channel
+
+
 class DeformableConvPerception(Perception):
     def __init__(self, in_channel=16, out_channel=80, kernel_size=3, slope=0.2, device="cpu"):
         super().__init__()
