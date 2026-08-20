@@ -166,7 +166,7 @@ TRAINING:
   STEPS: 50000
   LOSS_FN: "mse"                    # Reconstruction loss: mse, l1, lpips, vggstyle
   LEARNING_RATE: 0.0005
-  LR_SCHEDULE_MODE: "cosine"        # LR schedule: step, cosine, constant
+  LR_SCHEDULE_MODE: "cosine"        # LR schedule: step, cosine, constant, wsd, exponential
   WARMUP_STEPS: 2000                # Linear LR warm-up duration
   ITER_N_MIN: 20                    # Minimum CA rollout steps per batch
   ITER_N_MAX: 26                    # Maximum CA rollout steps per batch (sampled uniformly)

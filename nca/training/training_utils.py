@@ -130,7 +130,7 @@ def create_wsd_scheduler(optimizer, warmup_steps, stable_steps, decay_steps, min
 # Scheduler factory
 # ---------------------------------------------------------------------------
 
-_VALID_MODES = ("step", "cosine", "constant", "wsd")
+_VALID_MODES = ("step", "cosine", "constant", "wsd", "exponential")
 
 
 def create_scheduler(optimizer, config) -> lr_scheduler.LRScheduler:
@@ -172,6 +172,8 @@ def create_scheduler(optimizer, config) -> lr_scheduler.LRScheduler:
             decay_steps=decay_steps,
             min_lr_ratio=config.TRAINING.WSD_MIN_LR_RATIO,
         )
+    elif mode == "exponential":
+        return lr_scheduler.ExponentialLR(optimizer, gamma=config.TRAINING.LR_GAMMA)
     else:
         raise ValueError(
             f"Invalid LR_SCHEDULE_MODE '{mode}'. Must be one of {_VALID_MODES}."
