@@ -3,6 +3,8 @@ from nca.core.losses.loss_factory import create_loss_fn
 from nca.training.trainers.image_gen_trainer import ImageGenTrainer
 from nca.training.trainers.adversarial_trainer import AdversarialTrainer
 from nca.training.trainers.classification_trainer import ClassificationTrainer
+from nca.training.trainers.segmentation_trainer import SegmentationTrainer
+from nca.training.trainers.med_nca_trainer import MedNCATrainer
 
 # Registry of all available trainers.
 #
@@ -17,18 +19,24 @@ from nca.training.trainers.classification_trainer import ClassificationTrainer
 #   "image_gen"      — standard image generation / reconstruction training
 #   "adversarial"    — GAN training with a patch discriminator (WGAN-GP)
 #   "classification" — self-classifying NCA (mnist, cifar10)
+#   "segmentation"   — binary segmentation with a single backbone (decathlon)
+#   "med_nca"        — two-scale Med-NCA segmentation, two backbones (decathlon)
 TRAINER_REGISTRY = {
     "image_gen":      ImageGenTrainer,
     "adversarial":    AdversarialTrainer,
     "classification": ClassificationTrainer,
+    "segmentation":   SegmentationTrainer,
+    "med_nca":        MedNCATrainer,
 }
 
 # Datasets that are only compatible with a specific trainer.
 # Using a different trainer with these datasets raises a ValueError.
 # Datasets not listed here accept any trainer.
+# The first entry of each set is the one auto selection picks.
 _DATASET_REQUIRED_TRAINER = {
-    "mnist":   "classification",
-    "cifar10": "classification",
+    "mnist":   ("classification",),
+    "cifar10": ("classification",),
+    "decathlon": ("segmentation", "med_nca"),
 }
 
 
@@ -64,7 +72,7 @@ def create_trainer(config: Config, model, dataloader, config_path: str):
         # Auto-select based on dataset and adversarial flag
         dataset = config.DATASET.NAME
         if dataset in _DATASET_REQUIRED_TRAINER:
-            trainer_key = _DATASET_REQUIRED_TRAINER[dataset]
+            trainer_key = _DATASET_REQUIRED_TRAINER[dataset][0]
         elif config.ADVERSARIAL.ENABLED:
             trainer_key = "adversarial"
         else:
@@ -78,9 +86,9 @@ def create_trainer(config: Config, model, dataloader, config_path: str):
             )
         dataset = config.DATASET.NAME
         required = _DATASET_REQUIRED_TRAINER.get(dataset)
-        if required is not None and trainer_key != required:
+        if required is not None and trainer_key not in required:
             raise ValueError(
-                f"Dataset '{dataset}' requires TRAINER_TYPE='{required}', "
+                f"Dataset '{dataset}' requires TRAINER_TYPE in {list(required)}, "
                 f"but got '{trainer_key}'. Either change the dataset or the trainer."
             )
 
