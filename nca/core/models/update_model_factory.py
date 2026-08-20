@@ -1,5 +1,5 @@
 from nca.utils.config import Config
-from nca.core.models.ca.update_models import SimpleMLPUpdate, ResNetUpdate
+from nca.core.models.ca.update_models import SimpleMLPUpdate, ResNetUpdate, NoBiasMLPUpdate
 
 # Registry of all available update models.
 #
@@ -13,6 +13,7 @@ from nca.core.models.ca.update_models import SimpleMLPUpdate, ResNetUpdate
 # Available models:
 #   "MLP"    — stack of 1×1 convolutions with configurable hidden channels
 #   "ResNet" — residual blocks with configurable depth
+#   "NoBiasMLP" — stack of 1×1 convolutions with ReLU and no bias on the final conv (Med-NCA convention)
 UPDATE_MODEL_REGISTRY = {
     "MLP": lambda in_ch, out_ch, cfg: SimpleMLPUpdate(
         in_channels=in_ch,
@@ -25,6 +26,12 @@ UPDATE_MODEL_REGISTRY = {
         out_channels=out_ch,
         hidden_channels=cfg.MODEL.HIDDEN_CHANNELS,
         num_blocks=cfg.MODEL.RESNET_BLOCKS,
+        final_activation=cfg.MODEL.FINAL_ACTIVATION,
+    ),
+    "NoBiasMLP": lambda in_ch, out_ch, cfg: NoBiasMLPUpdate(
+        in_channels=in_ch,
+        out_channels=out_ch,
+        hidden_channels=cfg.MODEL.HIDDEN_CHANNELS,
         final_activation=cfg.MODEL.FINAL_ACTIVATION,
     ),
 }

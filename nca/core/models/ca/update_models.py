@@ -65,3 +65,21 @@ class ResNetUpdate(UpdateModelBase):
         x = self.res_blocks(x)
         x = self.final_conv(x)
         return self.final_activation(x)
+
+class NoBiasMLPUpdate(UpdateModelBase):
+    """MLP update with ReLU and a bias-free final layer (Med-NCA convention)."""
+    def __init__(self, in_channels, out_channels, hidden_channels=[128], activation=nn.ReLU, final_activation=False, **kwargs):
+        super().__init__(in_channels, out_channels)
+        layers = []
+        current_in = in_channels
+        for h_dim in hidden_channels:
+            layers.append(nn.Conv2d(current_in, h_dim, 1))
+            layers.append(activation())
+            current_in = h_dim
+        layers.append(nn.Conv2d(current_in, out_channels, 1, bias=False))
+        if final_activation:
+            layers.append(nn.Tanh())
+        self.model = nn.Sequential(*layers)
+
+    def forward(self, x):
+        return self.model(x)

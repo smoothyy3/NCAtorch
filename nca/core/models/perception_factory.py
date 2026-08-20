@@ -7,6 +7,7 @@ from nca.core.models.ca.perceptions import (
     ResidualConvPerception,
     MultiPerception,
     MultiHeadAttentionPerception,
+    IdentityConvPerception,
 )
 
 # Registry of all available perception modules.
@@ -25,6 +26,8 @@ from nca.core.models.ca.perceptions import (
 #   "sobel"          — fixed Sobel edge-detection filters (no learned parameters)
 #   "deformable_conv"— deformable convolution with learned offsets
 #   "residual_conv"  — residual convolutional block
+#   "identity_conv"  — two parallel convs concatenated with the identity state; reflect padding, no activation
+
 PERCEPTION_REGISTRY = {
     "conv": lambda in_ch, cfg, dev: ConvPerception(
         in_ch, cfg.OUT_CHANNEL, cfg.KERNEL_SIZE, dilation=cfg.DILATION, device=dev
@@ -44,6 +47,9 @@ PERCEPTION_REGISTRY = {
     ),
     "residual_conv": lambda in_ch, cfg, dev: ResidualConvPerception(
         in_ch, cfg.OUT_CHANNEL, cfg.KERNEL_SIZE, device=dev
+    ),
+    "identity_conv": lambda in_ch, cfg, dev: IdentityConvPerception(
+        in_ch, kernel_size=cfg.KERNEL_SIZE, device=dev, out_channel=cfg.OUT_CHANNEL
     ),
 }
 
