@@ -8,7 +8,8 @@ from nca.core.losses.loss_functions import (
     TotalAgreementLoss,
     OverflowLoss,
     L1Loss,
-    ImageCrossEntropyLoss
+    ImageCrossEntropyLoss,
+    DiceBCELoss
 )
 from nca.utils.config import Config
 
@@ -23,6 +24,7 @@ METRIC_REGISTRY = {
     "acc":   lambda device: PixelAccuracyLoss(),
     "ta":    lambda device: TotalAgreementLoss(),
     "lpips": lambda device: LPIPSLoss(device=device),
+    "dice_bce": lambda device: DiceBCELoss(),
 }
 
 # Registry of all available training loss functions.
@@ -36,6 +38,7 @@ LOSS_FN_REGISTRY = {
     "p_ce":     lambda cfg: PixelCrossEntropyLoss(),
     "i_ce":     lambda cfg: ImageCrossEntropyLoss(overflow_loss=cfg.TRAINING.OVERFLOW_LOSS, overflow_weight=cfg.TRAINING.OVERFLOW_WEIGHT),
     "overflow": lambda cfg: OverflowLoss(overflow_weight=cfg.TRAINING.OVERFLOW_WEIGHT),
+    "dice_bce": lambda cfg: DiceBCELoss(),
 }
 
 

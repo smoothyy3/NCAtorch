@@ -618,3 +618,31 @@ class VGGLoss(nn.Module):
             "l1_loss": l1_loss,
             "vgg_loss": vgg_loss
         }
+
+class DiceBCELoss(Loss):
+    """
+    Dice + BCE, 1:1 unweighted. Batch-global flatten (Med-NCA convention).
+    """
+    def __init__(self, smooth=1.0):
+        super().__init__()
+        self.smooth = smooth
+
+    def forward(self, predictions, targets):
+        probs = torch.sigmoid(predictions)
+
+        p_flat = torch.flatten(probs)
+        t_flat = torch.flatten(targets)
+
+        intersection = (p_flat * t_flat).sum()
+        dice_loss = 1 - (2.0 * intersection + self.smooth) / (p_flat.sum() + t_flat.sum() + self.smooth)
+
+        bce = F.binary_cross_entropy_with_logits(input=predictions, target=targets, reduction="mean")
+
+        dice_BCE = bce + dice_loss
+
+        return {
+            "total_loss": dice_BCE,
+            "bce_loss": bce,
+            "dice_loss": dice_loss,
+        }
+    
