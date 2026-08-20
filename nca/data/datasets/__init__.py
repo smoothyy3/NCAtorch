@@ -10,6 +10,7 @@ from nca.data.datasets.moving_mnist_dataset import MovingMNISTDataset
 from nca.data.datasets.celeba_dataset import CelebADataset
 from nca.data.datasets.growing_mnist_dataset import GrowingMNISTDataset
 from nca.data.datasets.walking_dataset import WalkingDataset
+from nca.data.datasets.decathlon_dataset import DecathlonDataset
 
 __all__ = [
     "NCADataset",
@@ -22,4 +23,5 @@ __all__ = [
     "CelebADataset",
     "GrowingMNISTDataset",
     "WalkingDataset",
+    "DecathlonDataset",
 ]

@@ -8,6 +8,7 @@ from nca.data.datasets import (
     MovingMNISTDataset,
     CelebADataset,
     GrowingMNISTDataset,
+    DecathlonDataset,
 )
 from nca.data.data_wrapper import DataWrapper
 from nca.data.cfg_dataset_wrapper import CFGDatasetWrapper
@@ -31,6 +32,7 @@ from torch.utils.data import DataLoader
 #   "growing_mnist" — growing MNIST
 #   "moving_mnist"  — temporal video prediction on Moving MNIST
 #   "celeba"        — CelebA face generation
+#   "decathlon"     — 2D slices from Medical Segmentation Decathlon volumes
 
 
 def _create_emoji(config: Config, _train: bool):
@@ -148,6 +150,16 @@ def _create_celeba(config: Config, train: bool):
     size = config.DATASET.TARGET_SIZE
     return dataset, 1, size, size
 
+def _create_decathlon(config: Config, train: bool):
+    dataset = DecathlonDataset(
+        root=config.DATASET.DATAROOT,
+        channel_n=config.MODEL.CHANNEL_N,
+        size=(config.DATASET.TARGET_SIZE, config.DATASET.TARGET_SIZE),
+        train=train,
+        device="cpu",
+    )
+    return dataset, 0, config.DATASET.TARGET_SIZE, config.DATASET.TARGET_SIZE
+
 
 DATASET_REGISTRY = {
     "emoji":         _create_emoji,
@@ -158,6 +170,7 @@ DATASET_REGISTRY = {
     "growing_mnist": _create_growing_mnist,
     "moving_mnist":  _create_moving_mnist,
     "celeba":        _create_celeba,
+    "decathlon":     _create_decathlon,
 }
 
 
