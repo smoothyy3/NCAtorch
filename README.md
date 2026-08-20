@@ -206,6 +206,10 @@ PATTERN_POOL:
 ### 🖼️ High-Resolution Generation
 - **Latent Space NCAs**: 512x512 generation via pre-trained autoencoders
 
+### 🩺 Segmentation
+- **Medical Segmentation Decathlon**: binary segmentation of 2D slices
+- **Med-NCA**: two backbones over a downscaled and a full-resolution grid
+
 ## 📂 Project Structure
 
 ```
