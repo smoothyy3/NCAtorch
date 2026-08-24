@@ -214,5 +214,7 @@ train_log/*
 !train_log/mnist_mse
 !train_log/ot_swirly_conv3x3
 !train_log/e2h_latent
+!train_log/decathlon_backbone
+!train_log/decathlon_mednca
 wandb/*
 .claude/
