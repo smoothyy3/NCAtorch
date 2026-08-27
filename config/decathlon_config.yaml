@@ -44,7 +44,7 @@ TRAINING:
 DATASET:
   NAME: "decathlon"
   TARGET_SIZE: 256
-  DATAROOT: "/content/drive/MyDrive/Task04_Hippocampus"
+  DATAROOT: "./datasets/Task04_Hippocampus"
   NUM_WORKERS: 2
 
 PATTERN_POOL:

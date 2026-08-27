@@ -108,8 +108,7 @@ class DecathlonDataset(NCADataset):
         2. z-normalisation (SKIPPED when the slice is all-zero)
         3. percentile clip (0.5, 99.5) then rescale to [0, 1]
         """
-        img = cv2.normalize(img, None, alpha=0, beta=1,
-                            norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+        img = cv2.normalize(img, None, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
         if img.sum() > 0:
             img = (img - img.mean()) / img.std()
