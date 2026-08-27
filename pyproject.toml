@@ -9,6 +9,7 @@ dependencies = [
     "imageio[ffmpeg]>=2.35,<3",
     "lpips>=0.1.4",
     "matplotlib>=3.10,<4",
+    "nibabel>=5.0,<6",
     "numpy>=2.0,<3",
     "opencv-python>=4.10,<5",
     "pandas>=2.0,<3",
