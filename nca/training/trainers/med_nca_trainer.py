@@ -24,6 +24,9 @@ class MedNCATrainer(SegmentationTrainer):
     setup (Agent_Multi_NCA.batch_step, src/agents/Agent_Multi_NCA.py).
     """
 
+    def _trainable_parameters(self):
+        return chain(self.ca_model.parameters(), self.b2.parameters())
+
     def _initialize_base_optimizers(self):
         """
         Create b2, then one optimizer over both backbones.
@@ -36,7 +39,7 @@ class MedNCATrainer(SegmentationTrainer):
         )
 
         self.optimizer = optim.Adam(
-            chain(self.ca_model.parameters(), self.b2.parameters()),
+            self._trainable_parameters(),
             lr=self.config.TRAINING.LEARNING_RATE,
             betas=self.config.TRAINING.OPTIMIZER_BETAS,
         )
@@ -44,9 +47,7 @@ class MedNCATrainer(SegmentationTrainer):
         print(f"Using LR schedule: {self.config.TRAINING.LR_SCHEDULE_MODE}")
 
         total = sum(
-            p.numel()
-            for p in chain(self.ca_model.parameters(), self.b2.parameters())
-            if p.requires_grad
+            p.numel() for p in self._trainable_parameters() if p.requires_grad
         )
         print(f"Med-NCA: 2 backbones, {total:,} trainable parameters total")
 
