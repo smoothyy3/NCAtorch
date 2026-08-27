@@ -27,6 +27,7 @@ from nca.core.models.ca.perceptions import (
 #   "deformable_conv"— deformable convolution with learned offsets
 #   "residual_conv"  — residual convolutional block
 #   "identity_conv"  — two parallel convs concatenated with the identity state; reflect padding, no activation
+#                      (output width fixed at 3*in_channel; OUT_CHANNEL is ignored)
 
 PERCEPTION_REGISTRY = {
     "conv": lambda in_ch, cfg, dev: ConvPerception(
@@ -49,7 +50,7 @@ PERCEPTION_REGISTRY = {
         in_ch, cfg.OUT_CHANNEL, cfg.KERNEL_SIZE, device=dev
     ),
     "identity_conv": lambda in_ch, cfg, dev: IdentityConvPerception(
-        in_ch, kernel_size=cfg.KERNEL_SIZE, device=dev, out_channel=cfg.OUT_CHANNEL
+        in_ch, kernel_size=cfg.KERNEL_SIZE, device=dev
     ),
 }
 

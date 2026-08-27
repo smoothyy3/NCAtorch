@@ -479,20 +479,15 @@ class MultiPerception(Perception):
         return sum(p.get_out_channel() for p in self.perceptions)
     
 class IdentityConvPerception(Perception):
-    def __init__(
-        self, in_channel=16, kernel_size=3, device="cpu", out_channel=None) -> None:
+    def __init__(self, in_channel=16, kernel_size=3, device="cpu") -> None:
         super().__init__()
 
         self.in_channel = in_channel
         self.kernel_size = kernel_size
         self.device = device
 
+        # Width is fixed by the architecture: identity plus two convs.
         self.out_channel = 3 * in_channel
-        if out_channel is not None and out_channel != self.out_channel:
-            raise ValueError(
-                f"IdentityConvPerception output width is fixed at 3*in_channel"
-                f"({self.out_channel}); got OUT_CHANNEL={out_channel}"
-            )
 
         self.p0 = nn.Conv2d(
             in_channel, in_channel, kernel_size=kernel_size, padding=kernel_size // 2, stride=1, padding_mode="reflect"
